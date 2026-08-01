@@ -1,0 +1,61 @@
+<div class="h-full overflow-y-auto p-8">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">Vue d'ensemble</h2>
+
+  <!-- Cartes de statistiques dynamiques -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3 class="text-sm font-medium text-gray-500 mb-1">Balance de la caisse</h3>
+      <p class="text-3xl font-bold text-gray-800">
+        {{ bankService.soldeCaisse | number }} <span class="text-lg text-gray-500">FCFA</span>
+      </p>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3 class="text-sm font-medium text-gray-500 mb-1">Clients Actifs</h3>
+      <p class="text-3xl font-bold text-gray-800">{{ bankService.clientsActifs }}</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3 class="text-sm font-medium text-gray-500 mb-1">Crédits en cours</h3>
+      <p class="text-3xl font-bold text-gray-800">{{ bankService.totalCreditsActifs | number }} <span class="text-lg text-gray-500">FCFA</span></p>
+    </div>
+  </div>
+
+  <!-- Section des dernières opérations dynamiques -->
+  <div class="flex justify-between items-center mb-4">
+  <h3 class="text-lg font-bold text-gray-800">Dernières opérations</h3>
+  <input 
+    type="text" 
+    [(ngModel)]="searchTerm" 
+    placeholder="Rechercher (ex: Dépôt, 5000...)" 
+    class="border border-gray-300 rounded-md p-1.5 text-sm w-48"
+  >
+</div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-sm">
+        <thead>
+          <tr class="border-b border-gray-100 text-gray-500">
+            <th class="py-3 px-4 font-semibold">Type</th>
+            <th class="py-3 px-4 font-semibold">Montant</th>
+            <th class="py-3 px-4 font-semibold">Date</th>
+            <th class="py-3 px-4 font-semibold">Statut</th>
+          </tr>
+        </thead>
+
+
+        <tbody>
+          <tr *ngFor="let op of filteredOperations" class="border-b border-gray-50 hover:bg-gray-50">
+            <td class="py-3 px-4">
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold" 
+                    [ngClass]="op.type === 'Dépôt' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'">
+                {{ op.type }}
+              </span>
+            </td>
+            <td class="py-3 px-4 font-bold text-gray-800">{{ op.montant | number }} FCFA</td>
+            <td class="py-3 px-4 text-gray-500">{{ op.date }}</td>
+            <td class="py-3 px-4 text-green-600 font-medium">{{ op.statut }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

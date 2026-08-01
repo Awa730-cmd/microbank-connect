@@ -1,0 +1,55 @@
+<header class="h-16 bg-white shadow-sm flex items-center justify-end px-8 relative z-50">
+  
+  <!-- Conteneur global aligné à droite qui regroupe la cloche ET le profil -->
+  <div class="flex items-center space-x-6">
+    
+    <!-- 1. LA CLOCHE ET SON DROPDOWN -->
+    <div class="relative flex items-center">
+      <button (click)="toggleDropdown()" class="text-gray-500 hover:text-blue-600 focus:outline-none relative p-1 rounded-full hover:bg-gray-100 transition cursor-pointer">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+        </svg>
+        
+        <!-- BADGE -->
+        <span *ngIf="notifications.length > 0" class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full transform translate-x-1/3 -translate-y-1/3">
+          {{ notifications.length }}
+        </span>
+      </button>
+
+      <!-- MENU DÉROULANT (DROPDOWN) -->
+      <div *ngIf="isDropdownOpen" class="absolute right-0 top-full mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-100 z-50 overflow-hidden">
+        <div class="p-3 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+          <span class="font-semibold text-sm text-gray-700">Notifications</span>
+          <button *ngIf="notifications.length > 0" (click)="clearNotifications()" class="text-xs text-blue-600 hover:underline">
+            Tout lire
+          </button>
+        </div>
+        
+        <div class="max-h-60 overflow-y-auto">
+          <div *ngIf="notifications.length === 0" class="p-4 text-center text-sm text-gray-400">
+            Aucune nouvelle notification
+          </div>
+          <ul *ngIf="notifications.length > 0" class="divide-y divide-gray-100">
+            <li *ngFor="let notif of notifications" class="p-3 text-sm text-gray-600 hover:bg-gray-50 transition cursor-pointer">
+              {{ notif }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. LE PROFIL (AVATAR + TEXTE) -->
+    <div class="flex items-center space-x-3">
+      <!-- Avatar bleu -->
+      <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+        A
+      </div>
+      <!-- Infos texte -->
+      <div class="flex flex-col">
+        <span class="text-sm font-medium text-gray-700 leading-tight">Aminata</span>
+        <span class="text-xs text-gray-400">Profil : Agent</span>
+      </div>
+    </div>
+
+  </div>
+</header>

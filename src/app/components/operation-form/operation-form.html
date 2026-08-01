@@ -1,0 +1,66 @@
+<div class="operation-container">
+  <h2>Nouvelle Opération</h2>
+  
+  <!-- Message de succès -->
+  <div *ngIf="successMessage" class="alert-success">
+    {{ successMessage }}
+  </div>
+
+  <form [formGroup]="operationForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Type d'opération -->
+    <div class="form-group">
+      <label>Type d'opération</label>
+      <select formControlName="typeOperation" class="form-control">
+        <option value="depot">Dépôt</option>
+        <option value="retrait">Retrait</option>
+        <option value="transfert">Virement</option>
+      </select>
+    </div>
+
+    <!-- Choix du compte -->
+    <div class="form-group">
+      <label>Choisir le compte</label>
+      <select formControlName="compteId" class="form-control">
+  <option value="" disabled>Sélectionner un compte</option>
+  <option *ngFor="let client of comptes" [value]="client.id">
+    {{ client.nom }} - {{ client.solde || 0 }} FCFA
+  </option>
+</select>
+      <div *ngIf="operationForm.get('compteId')?.touched && operationForm.get('compteId')?.invalid" class="error-text">
+        Veuillez sélectionner un compte.
+      </div>
+    </div>
+
+    <!-- Choix du compte destinataire (s'affiche uniquement si c'est un Virement) -->
+<div class="form-group" *ngIf="operationForm.get('typeOperation')?.value === 'transfert'">
+  <label>Compte destinataire</label>
+  <select formControlName="destinataireId" class="form-control">
+    <option value="" disabled>Sélectionner un compte destinataire</option>
+    <option *ngFor="let client of comptes" [value]="client.id">
+      {{ client.nom }} - {{ client.solde || 0 }} FCFA
+    </option>
+  </select>
+</div>
+
+    <!-- Montant -->
+    <div class="form-group">
+      <label>Montant (FCFA)</label>
+      <input type="number" formControlName="montant" class="form-control" placeholder="Ex: 50000" />
+      <div *ngIf="operationForm.get('montant')?.touched && operationForm.get('montant')?.invalid" class="error-text">
+        Le montant minimum est de 100 FCFA.
+      </div>
+    </div>
+
+    <!-- Motif (Optionnel) -->
+    <div class="form-group">
+      <label>Motif / Description (Optionnel)</label>
+      <textarea formControlName="motif" class="form-control" rows="2" placeholder="Ex: Versement espèce"></textarea>
+    </div>
+
+    <!-- Bouton de validation -->
+    <button type="submit" class="btn-submit" [disabled]="operationForm.invalid">
+      Valider l'opération
+    </button>
+  </form>
+</div>

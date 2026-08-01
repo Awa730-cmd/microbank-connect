@@ -1,0 +1,42 @@
+<div class="p-4 sm:p-6 max-w-7xl mx-auto">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">Vue d'ensemble de la banque</h2>
+
+  <!-- Les 3 cartes du haut -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3 class="text-gray-500 text-sm font-medium">Total Clients</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2">{{ totalClients }}</p>
+      <p class="text-xs text-gray-400 mt-1">clients enregistrés</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3 class="text-gray-500 text-sm font-medium">Total Agents</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2">{{ totalAgents }}</p>
+      <p class="text-xs text-gray-400 mt-1">agents de la banque</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3 class="text-gray-500 text-sm font-medium">Volume des transactions</h3>
+      <p class="text-3xl font-bold text-green-600 mt-2">{{ volumeTransactions | number }}</p>
+      <p class="text-xs text-gray-400 mt-1">flux global</p>
+    </div>
+  </div>
+
+  <!-- Carte en bas : Évolution des ouvertures de comptes -->
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full">
+    <h3 class="text-gray-700 font-semibold mb-1">Évolution des ouvertures de comptes</h3>
+    <p class="text-xs text-gray-400 mb-4">Derniers comptes enregistrés</p>
+
+    <div class="space-y-2">
+      <div *ngFor="let client of derniersClients" class="flex justify-between items-center text-sm bg-gray-50 p-3 rounded-lg">
+        <span class="font-medium text-gray-800">{{ client.nom || client.prenom || 'Client' }}</span>
+        <span class="text-xs text-green-600 font-semibold bg-green-50 px-2 py-1 rounded-full">Actif</span>
+      </div>
+      
+      <div *ngIf="derniersClients.length === 0" class="text-xs text-gray-400 italic text-center py-4">
+        Aucun compte pour le moment
+      </div>
+    </div>
+  </div>
+
+</div>

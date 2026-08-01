@@ -1,0 +1,38 @@
+<div class="p-6 bg-white rounded-lg shadow-md">
+  
+  <!-- En-titre et Barre de recherche -->
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-xl font-bold text-gray-800">Liste des Comptes Bancaires</h3>
+    
+    <!-- Le champ de recherche que tu veux ajouter -->
+    <input 
+      type="text" 
+      [(ngModel)]="rechercheTexte" 
+      placeholder="Rechercher par nom ou numéro..." 
+      class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+    />
+  </div>
+
+  <div *ngIf="bankService.clients.length === 0" class="text-gray-500">
+    Aucun compte trouvé.
+  </div>
+  
+  <div class="overflow-x-auto shadow-md rounded-lg">
+ <table *ngIf="bankService.clients.length > 0" class="min-w-full divide-y divide-gray-200">
+    <thead>
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Numéro de compte</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titulaire</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Solde</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      <!-- On utilise clientsFiltres ici pour que la recherche fonctionne -->
+      <tr *ngFor="let compte of clientsFiltres" class="border-b border-gray-100 hover:bg-gray-50">
+        <td class="py-3 px-4 text-gray-800 font-medium">{{ compte.numero || 'ACC-2026-00#' + compte.id }}</td>
+        <td class="py-3 px-4 text-gray-800 font-medium">{{ compte.nom }}</td>
+        <td class="py-3 px-4 text-green-600 font-semibold">{{ compte.solde || 0 }} FCFA</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
