@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Bank } from '../../services/bank';
+import { BankService } from '../../services/bank';
 
 @Component({
   selector: 'app-account-list',
@@ -11,7 +11,7 @@ import { Bank } from '../../services/bank';
   styleUrls: ['./account-list.css']
 })
 export class AccountListComponent implements OnInit {
-  public bankService = inject(Bank);
+  public bankService = inject(BankService);
   private cdr = inject(ChangeDetectorRef);
 
   rechercheTexte: string = '';
@@ -21,12 +21,20 @@ export class AccountListComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+ 
   get clientsFiltres() {
     return this.bankService.clients.filter(client => 
       client.nom.toLowerCase().includes(this.rechercheTexte.toLowerCase()) ||
       (client.id && client.id.toString().toLowerCase().includes(this.rechercheTexte.toLowerCase()))
     );
   }
+
+  supprimerClient(client: any) {
+    this.bankService.supprimerClient(client);
+  }
 }
+
+
+
   
   

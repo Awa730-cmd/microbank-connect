@@ -4,22 +4,25 @@
   <!-- Cartes de statistiques dynamiques -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h3 class="text-sm font-medium text-gray-500 mb-1">Balance de la caisse</h3>
+  <h3 class="text-sm font-medium text-gray-500 mb-1">Balance de la caisse</h3>
+
       <p class="text-3xl font-bold text-gray-800">
-        {{ bankService.soldeCaisse | number }} <span class="text-lg text-gray-500">FCFA</span>
+        {{ balanceCaisse | number }} <span class="text-lg text-gray-500">FCFA</span>
       </p>
     </div>
 
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h3 class="text-sm font-medium text-gray-500 mb-1">Clients Actifs</h3>
-      <p class="text-3xl font-bold text-gray-800">{{ bankService.clientsActifs }}</p>
-    </div>
-
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h3 class="text-sm font-medium text-gray-500 mb-1">Crédits en cours</h3>
-      <p class="text-3xl font-bold text-gray-800">{{ bankService.totalCreditsActifs | number }} <span class="text-lg text-gray-500">FCFA</span></p>
-    </div>
+   <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <h3 class="text-sm font-medium text-gray-500 mb-1">Clients Actifs</h3>
+    <p class="text-3xl font-bold text-gray-800">{{ clientsActifs }}</p>
   </div>
+
+   <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+  <h3 class="text-sm font-medium text-gray-500 mb-1">Crédits en cours</h3>
+  <p class="text-3xl font-bold text-gray-800">{{ totalCredits }} FCFA</p>
+</div>
+</div>
+
+  
 
   <!-- Section des dernières opérations dynamiques -->
   <div class="flex justify-between items-center mb-4">

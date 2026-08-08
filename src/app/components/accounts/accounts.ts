@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Bank } from '../../services/bank';
+import { BankService } from '../../services/bank';
 import { AccountListComponent } from '../account-list/account-list'; 
 
 @Component({
@@ -10,10 +10,15 @@ import { AccountListComponent } from '../account-list/account-list';
   templateUrl: './accounts.html',
   styleUrls: ['./accounts.css'],
 })
-export class Accounts {
-  constructor(public bankService: Bank) {}
+export class AccountsComponent implements OnInit {
+  //  variable qui stocke les comptes
+  comptes: any[] = []; 
 
-  get listClients() {
-    return this.bankService.clients;
+  ngOnInit() {
+    // Va chercher la liste à jour dans le localStorage
+    const comptesSauvegardes = localStorage.getItem('accounts');
+    if (comptesSauvegardes) {
+      this.comptes = JSON.parse(comptesSauvegardes);
+    }
   }
 }

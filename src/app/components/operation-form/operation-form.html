@@ -23,9 +23,9 @@
       <label>Choisir le compte</label>
       <select formControlName="compteId" class="form-control">
   <option value="" disabled>Sélectionner un compte</option>
-  <option *ngFor="let client of comptes" [value]="client.id">
-    {{ client.nom }} - {{ client.solde || 0 }} FCFA
-  </option>
+ <option *ngFor="let client of comptes" [value]="client.nom">
+  {{ client.nom }} - {{ client.solde || 0 }} FCFA
+</option>
 </select>
       <div *ngIf="operationForm.get('compteId')?.touched && operationForm.get('compteId')?.invalid" class="error-text">
         Veuillez sélectionner un compte.
@@ -36,11 +36,11 @@
 <div class="form-group" *ngIf="operationForm.get('typeOperation')?.value === 'transfert'">
   <label>Compte destinataire</label>
   <select formControlName="destinataireId" class="form-control">
-    <option value="" disabled>Sélectionner un compte destinataire</option>
-    <option *ngFor="let client of comptes" [value]="client.id">
-      {{ client.nom }} - {{ client.solde || 0 }} FCFA
-    </option>
-  </select>
+  <option value="" disabled>Sélectionner un compte destinataire</option>
+  <option *ngFor="let client of comptes" [value]="client.nom">
+    {{ client.nom }} - {{ client.solde || 0 }} FCFA
+  </option>
+</select>
 </div>
 
     <!-- Montant -->

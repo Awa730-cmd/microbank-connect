@@ -1,120 +1,155 @@
 <div class="p-6">
-  <!-- En-tête de la page -->
-  <div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Gestion des Crédits</h2>
-    
-  </div>
-  <!-- Formulaire d'ajout de crédit -->
-   <div class="flex-1">
-  <label class="block text-sm font-medium text-gray-700 mb-1">Choisir le client</label>
-  <select [(ngModel)]="nouveauClient" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-    <option value="" disabled selected>Sélectionner un client</option>
-    <!-- Assure-toi d'avoir une variable 'comptes' ou 'clients' dans ton fichier TS -->
-    <option *ngFor="let client of comptes" [value]="client.id">
-      {{ client.nom }}
-    </option>
-  </select>
-</div>
+  <!-- Formulaire d'octroi de crédit -->
   <div class="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-100">
-    <!-- Formulaire d'ajout de crédit -->
-<div id="formulaireCredit" class="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-100">
-    <h3 class="text-md font-semibold text-gray-700 mb-4">Demander un nouveau crédit</h3>
-    
-    <div class="flex gap-4 items-end">
-      <div class="flex-1">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Montant demandé (FCFA)</label>
-        <input type="number" 
-               [(ngModel)]="nouveauMontant" 
-               class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-               placeholder="Ex: 5000000">
-      </div>
-      
-      <div class="flex-1">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Taux d'intérêt (%)</label>
-        <input type="number" 
-               [(ngModel)]="nouveauTaux" 
-               class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-               placeholder="Ex: 5">
-      </div>
-      
+    <h2 class="text-xl font-bold mb-4 text-gray-800">Gestion des Crédits</h2>
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Choisir le client</label>
+      <select [(ngModel)]="nouveauClient" name="nouveauClient" class="w-full border border-gray-300 rounded-md p-2">
+        <option value="" disabled selected>Sélectionner un client</option>
+       <option *ngFor="let client of comptes" [value]="client.id">{{ client.nom }}</option>
+      </select>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div>
-        <button (click)="validerNouveauCredit()" 
-                class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition font-semibold shadow-sm">
-          Valider la demande
-        </button>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Montant demandé (FCFA)</label>
+        <input type="number" [(ngModel)]="nouveauMontant" name="nouveauMontant" class="w-full border border-gray-300 rounded-md p-2">
       </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Taux d'intérêt (%)</label>
+        <input type="number" [(ngModel)]="nouveauTaux" name="nouveauTaux" class="w-full border border-gray-300 rounded-md p-2">
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <button (click)="validerNouveauCredit()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
+        Valider la demande
+      </button>
     </div>
   </div>
 
   <!-- Tableau des crédits en cours -->
-  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+  <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
     <div class="p-4 border-b border-gray-200 bg-gray-50">
       <h3 class="text-lg font-semibold text-gray-700">Crédits en cours</h3>
     </div>
+    <div class="overflow-x-auto shadow-md rounded-lg">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Référence</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Client</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Montant</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Taux</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Statut</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 bg-white">
+          <tr *ngFor="let credit of credits" class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              {{ credit.reference }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ credit.client }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ credit.montant | number:'1.0-0' }} FCFA
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ credit.taux }}%
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+              <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                    [ngClass]="{
+                      'bg-green-100 text-green-800': credit.statut === 'Actif',
+                      'bg-yellow-100 text-yellow-800': credit.statut === 'En_attente',
+                      'bg-blue-100 text-blue-800': credit.statut === 'Remboursé'
+                    }">
+              {{ credit.statut || 'En_attente' }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+              <!-- Appel de la fonction du TS -->
+             <button (click)="creditSelectionne = credit" class="text-xs text-blue-600 hover:text-blue-900">
+  Échéancier
+</button>
 
-   <div class="overflow-x-auto shadow-md rounded-lg">
-  <table class="min-w-full divide-y divide-gray-200">
-    <thead class="bg-white">
-      <tr>
-        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Client</th>
-        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Référence</th>
-        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Montant</th>
-        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Taux</th>
-        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Statut</th>
-        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
-      </tr>
-    </thead>
-  </table>
-</div>
-      <tr *ngFor="let credit of credits" class="hover:bg-gray-50">
-  <!-- 1. Référence -->
-  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-    {{ credit.reference }}
-  </td>
+              <!-- Approuver s'affiche si le statut correspond bien à 'En_attente' -->
+              <button *ngIf="credit.statut === 'En_attente' || credit.statut === 'En attente' || credit.statut === 'en_attente'"
+        (click)="approuverCredit(credit.reference)"
+        class="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition">
+  Approuver
+</button>
+                
+            
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-  <!-- 2. Client -->
-  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-    {{ credit.clientNom }}
-  </td>
+  <!-- Bloc d'affichage dynamique de l'échéancier basé sur la variable creditSelectionne -->
+  <div *ngIf="creditSelectionne" class="bg-white p-6 rounded-lg shadow-md mt-8 border border-gray-100">
+    <div class="flex justify-between items-center mb-5">
+      <h3 class="text-lg font-bold text-gray-800">
+        Échéancier pour le crédit {{ creditSelectionne.reference }} - {{ creditSelectionne.client}}
+      </h3>
+      <button (click)="closeEcheanceView()" class="text-gray-500 hover:text-gray-700">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
 
-  <!-- 3. Montant -->
-  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-    {{ credit.montant }} FCFA
-  </td>
-
-  <!-- 4. Taux -->
-  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-    {{ credit.taux }}%
-  </td>
-
-  <!-- 5. Statut -->
-  <td class="px-6 py-4 whitespace-nowrap text-sm">
-    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-          [ngClass]="{
-            'bg-green-100 text-green-800': credit.statut === 'Actif',
-            'bg-yellow-100 text-yellow-800': credit.statut === 'En attente',
-            'bg-blue-100 text-blue-800': credit.statut === 'Remboursé'
-          }">
-      {{ credit.statut }}
-    </span>
-  </td>
-
-  <!-- 6. Actions -->
-  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-  <!-- Bouton Approuver : visible SEULEMENT si le statut est "En attente" -->
-  <button *ngIf="credit.statut === 'En attente'"
-          (click)="approuverCredit(credit.reference)"
-          class="text-blue-600 hover:text-blue-900 bg-blue-50 px-3 py-1 rounded-md transition mr-2">
-    Approuver
-  </button>
-
-  <!-- Bouton Rembourser : visible SEULEMENT si le statut est "Actif" -->
-  <button *ngIf="credit.statut === 'Actif'"
-          (click)="rembourserCredit(credit.reference)"
-          class="text-green-600 hover:text-green-900 bg-green-50 px-3 py-1 rounded-md transition">
-    Rembourser
-  </button>
+    <div class="overflow-x-auto shadow-md rounded-lg">
+      <table class="w-full text-sm text-left border-collapse">
+        <thead class="bg-gray-50 text-xs text-gray-600 uppercase">
+          <tr>
+            <th scope="col" class="px-4 py-3">Mois N°</th>
+            <th scope="col" class="px-4 py-3">Date Limite</th>
+            <th scope="col" class="px-4 py-3">Montant Dû</th>
+            <th scope="col" class="px-4 py-3">Montant Payé</th>
+            <th scope="col" class="px-4 py-3">Statut</th>
+            <th scope="col" class="px-4 py-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let echeance of creditSelectionne.echeancier" class="border-b hover:bg-gray-50">
+            <td class="px-4 py-3 font-medium text-gray-900">Mois {{ echeance.mois }}</td>
+            <td class="px-4 py-3">{{ echeance.dateDue | date: 'dd/MM/yyyy' }}</td>
+            <td class="px-4 py-3">{{ echeance.amountDue | number: '1.0-0' }} FCFA</td>
+            <td class="px-4 py-3 font-semibold text-green-600">{{ echeance.amountPaid | number: '1.0-0' }} FCFA</td>
+            <td class="px-4 py-3">
+              <span *ngIf="echeance.statut === 'PAYE'"
+                    class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
+                PAYÉ
+              </span>
+              <span *ngIf="echeance.statut === 'En_attente'"
+                    class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded">
+                En attente
+              </span>
+              <span *ngIf="echeance.statut === 'En_cours'"
+                    class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">
+                En cours
+              </span>
+            </td>
+            <td class="px-4 py-3">
+           <button *ngIf="(creditSelectionne.statut === 'Approuvé' || creditSelectionne.statut === 'Actif')"
+        (click)="payerEcheance(creditSelectionne, echeance)"
+        class="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition">
+  Payer ce mois
+</button>
+           <!-- Le texte "En attente d'approbation" s'affiche si le crédit n'est pas encore approuvé -->
+<span *ngIf="creditSelectionne.statut !== 'Approuvé' && creditSelectionne.statut !== 'Actif'" class="text-xs text-gray-400 italic">
+  En attente d'approbation
+</span>
 </td>
-</tr>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

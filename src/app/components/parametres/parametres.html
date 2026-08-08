@@ -1,0 +1,34 @@
+<div class="p-6 max-w-4xl mx-auto">
+  <h2 class="text-2xl font-bold text-slate-800 mb-6">Paramètres de l'application</h2>
+
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+    <h3 class="text-lg font-semibold text-slate-700 mb-2">Changer de Profil de Test</h3>
+    <p class="text-slate-500 text-sm mb-4">Sélectionnez le rôle à simuler dans l'application :</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <button 
+        (click)="changerRole('AGENT', 'Aminata')"
+        [class.border-blue-600]="authService.roleActuel() === 'AGENT'"
+        class="p-4 border-2 rounded-xl text-left hover:border-blue-500 transition-all bg-slate-50">
+        <div class="font-bold text-slate-800">Profil Agent</div>
+        <div class="text-xs text-slate-500">Gestion clients, opérations & crédits</div>
+      </button>
+
+      <button 
+        (click)="changerRole('GESTIONNAIRE', 'M. Diop')"
+        [class.border-blue-600]="authService.roleActuel() === 'GESTIONNAIRE'"
+        class="p-4 border-2 rounded-xl text-left hover:border-blue-500 transition-all bg-slate-50">
+        <div class="font-bold text-slate-800">Profil Gestionnaire</div>
+        <div class="text-xs text-slate-500">Supervision, agents & statistiques</div>
+      </button>
+
+      <button 
+        (click)="changerRole('CLIENT', 'Nah awa Faye')"
+        [class.border-blue-600]="authService.roleActuel() === 'CLIENT'"
+        class="p-4 border-2 rounded-xl text-left hover:border-blue-500 transition-all bg-slate-50">
+        <div class="font-bold text-slate-800">Profil Client</div>
+        <div class="text-xs text-slate-500">Consultation solde & crédits en cours</div>
+      </button>
+    </div>
+  </div>
+</div>

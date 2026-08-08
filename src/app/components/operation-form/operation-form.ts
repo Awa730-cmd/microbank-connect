@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Bank } from '../../services/bank';
+import { BankService } from '../../services/bank';
+
 @Component({
   selector: 'app-operation-form',
   standalone: true,
@@ -10,16 +11,12 @@ import { Bank } from '../../services/bank';
   styleUrls: ['./operation-form.css']
 })
 export class OperationFormComponent {
+
   operationForm: FormGroup;
   successMessage: string = '';
 
-  // Liste fictive des comptes disponibles pour le client
-  get comptes() {
-  return this.bankService.clients;
-}
-
-  // On injecte le service ici aussi
-  constructor(private fb: FormBuilder, private bankService: Bank) {
+  // On injecte le service ici
+  constructor(private fb: FormBuilder, private bankService: BankService) {
     this.operationForm = this.fb.group({
       typeOperation: ['depot', Validators.required],
       compteId: ['', Validators.required],
@@ -31,28 +28,23 @@ export class OperationFormComponent {
 
   onSubmit() {
     if (this.operationForm.valid) {
-      // On récupère les valeurs du formulaire
-      const type = this.operationForm.value.typeOperation;
-      const montant = this.operationForm.value.montant;
-      const destinataireId = this.operationForm.value.destinataireId;
+      const formValues = this.operationForm.value;
+      const compteSelectionne = formValues.compteId || formValues.destinataireId;
+      const montant = Number(formValues.montant);
+      const typeOperation = formValues.typeOperation || 'depot';
 
-      // On envoie ces valeurs à notre service !
-      this.bankService.effectuerOperation(
-      this.operationForm.value.compteId, 
-      type, 
-      montant, 
-      destinataireId
-      );
-  
- this.successMessage = 'Opération effectuée avec succès !';
-      
-     setTimeout(() => {
-        this.operationForm.reset({ typeOperation: 'depot' });
-        this.successMessage = '';
-      }, 3000);
+      // Appel direct et propre de la méthode centralisée dans le service BankService
+      this.bankService.effectuerOperation(compteSelectionne, typeOperation, montant);
 
+      // Réinitialisation du formulaire
+      this.operationForm.reset({ typeOperation: 'depot' });
     } else {
       this.operationForm.markAllAsTouched();
     }
+  }
+
+  // Liste des comptes disponibles pour le client
+  get comptes() {
+    return this.bankService.getClients();
   }
 }

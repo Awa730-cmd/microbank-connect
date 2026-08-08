@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CreditsComponent } from './credits';
+import { HistoriqueAgent } from './historique-agent';
 
-describe('CreditsComponent', () => {
-  let component: CreditsComponent;
-  let fixture: ComponentFixture<CreditsComponent>;
+describe('HistoriqueAgent', () => {
+  let component: HistoriqueAgent;
+  let fixture: ComponentFixture<HistoriqueAgent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CreditsComponent],
+      imports: [HistoriqueAgent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CreditsComponent);
+    fixture = TestBed.createComponent(HistoriqueAgent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

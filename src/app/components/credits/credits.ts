@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Bank } from '../../services/bank'; 
+import { BankService } from '../../services/bank'; 
 
 @Component({
   selector: 'app-credits',
@@ -12,33 +12,34 @@ import { Bank } from '../../services/bank';
 })
 export class CreditsComponent implements OnInit {
 
-  private bankService = inject(Bank);
-  credits: any[] | undefined;
-  
-  // Variables
- get listeCredits() {
-  return this.bankService.credits;
-}
-  nouveauMontant: number = 0;
-  nouveauTaux: number = 0;
-  // La variable pour stocker le client choisi dans le menu déroulant
-nouveauClient: string = '';
+  public bankService = inject(BankService);
 
-// On récupère la liste des clients depuis le service pour le menu déroulant
-get comptes() {
-  return this.bankService.clients;
-}
- 
+  // Listes
+  public credits: any[] = [];
+  public comptes: any[] = [];
 
-ngOnInit(): void {
-  this.chargerCredits(); // 2. Charge les crédits au démarrage
+  // Formulaire
+  public nouveauClient: any = null;
+  public nouveauMontant: number = 0;
+  public nouveauTaux: number = 0;
+
+  // Modale échéance
+  public selectedCreditForEcheance: any = null;
+  public creditSelectionne: any = null;
+
+  ngOnInit(): void {
+    this.chargerCredits();
+    this.chargerComptes();
   }
+
   chargerCredits() {
-    this.credits = this.bankService.getCredits(); // 3. Récupère les données depuis le service
+    this.credits = this.bankService.getCredits() || [];
   }
-  
 
-  // Fonctions
+  chargerComptes() {
+    this.comptes = this.bankService.getClients() || [];
+  }
+
   scrollToForm() {
     const element = document.getElementById('formulaireCredit');
     if (element) {
@@ -46,47 +47,98 @@ ngOnInit(): void {
     }
   }
 
-  approuverCredit(reference: string) {
-    this.bankService.validerCredit(reference);
-    this.credits = [...this.bankService.getCredits()];
-  }
-  payerRemboursement(reference: string) {
-  this.bankService.rembourserCredit(reference);
-}
-
-rembourserCredit(reference: string) {
-    // 1. Appelle le service pour faire le remboursement et mettre à jour le solde
-    this.bankService.rembourserCredit(reference);
-
-    // 2. Rafraîchit la liste locale pour voir le changement 
-    this.credits = this.bankService.getCredits();
-  }
   validerNouveauCredit() {
-  if (this.nouveauMontant > 0 && this.nouveauTaux > 0 && this.nouveauClient) {
-  this.credits = [...this.bankService.getCredits()]; // Mettre à jour la liste des crédits après l'ajout
-    
-    // 1. Recherche du nom du client
-    const clientChoisi = this.comptes.find((c: any) => c.id === this.nouveauClient);
-    const nomDuClient = clientChoisi ? clientChoisi.nom : 'Client inconnu';
+  if (!this.nouveauClient || this.nouveauMontant <= 0) {
+    alert("Veuillez sélectionner un client et entrer un montant valide !");
+    return;
+  }
 
-    // 2. Création de l'objet crédit
-    const nouveauCredit = {
-      id: Date.now(),
-      reference: 'CRD-' + Math.floor(1000 + Math.random() * 9000),
-      clientNom: nomDuClient, 
-      montant: this.nouveauMontant,
-      taux: this.nouveauTaux,
-      statut: 'En attente',
-    };
+  // Génération d'un échéancier de 3 mois par exemple
+  const montantMensuel = Math.round(this.nouveauMontant / 3);
+    const echeancierGenere = [
+      { mois: 1, dateDue: '09/05/2026', amountDue: montantMensuel, amountPaid: 0, statut: 'En_attente' },
+      { mois: 2, dateDue: '10/05/2026', amountDue: montantMensuel, amountPaid: 0, statut: 'En_attente' },
+      { mois: 3, dateDue: '11/05/2026', amountDue: (this.nouveauMontant - (montantMensuel * 2)), amountPaid: 0, statut: 'En_attente' }
+    ];
 
-    // 3. Sauvegarde via le service !
-    this.bankService.ajouterCredit(nouveauCredit);
-    this.credits = [...this.bankService.getCredits()];
+  const nouveauCredit = {
+    reference: `CRE-${Math.floor(1000 + Math.random() * 9000)}`,
+    client: this.nouveauClient,
+    montant: Number(this.nouveauMontant),
+    taux: Number(this.nouveauTaux || 5),
+    statut: 'En_attente',
+    echeancier: echeancierGenere
+  };
 
-    // 4. Réinitialisation des champs du formulaire
+  if (this.bankService.ajouterCredit(nouveauCredit)) {
+    this.nouveauClient = null;
     this.nouveauMontant = 0;
     this.nouveauTaux = 0;
-    this.nouveauClient = '';
+    this.chargerCredits();
   }
 }
+  approuverCredit(reference: string) {
+    if (this.bankService.validerCredit(reference)) {
+      this.chargerCredits();
+    }
+  }
+
+  payerRemboursement(reference: string) {
+    if (this.bankService.rembourserCredit(reference)) {
+      this.chargerCredits();
+    }
+  }
+
+ 
+  payerEcheance(credit: any, echeance: any) {
+    if (echeance.statut !== 'PAYÉ') {
+      
+      // 1. On trouve le client associé dans la liste des comptes chargés
+      const clientConcerne = this.comptes.find((c: any) => c.id === credit.client);
+      
+      if (clientConcerne) {
+        
+        const montantAPayer = Number(echeance.amountDue); 
+        
+        // 2. On déduit le montant du solde du client
+        clientConcerne.solde = Number(clientConcerne.solde) - montantAPayer;
+        
+        // 3. On passe l'échéance en 'Payé'
+        echeance.statut = 'PAYÉ';
+
+      this.bankService.sauvegarderDonnees();
+      
+        
+        alert(`Paiement de ${montantAPayer} FCFA effectué ! Nouveau solde de ${clientConcerne.nom} : ${clientConcerne.solde} FCFA.`);
+        
+        } else {
+        alert("Erreur : Impossible de retrouver le compte du client pour déduire le solde.");
+        return;
+      }
+
+      // 4. Vérifier si TOUTES les échéances sont maintenant payées pour solder le crédit
+      if (credit.echeancier && credit.echeancier.length > 0) {
+        const toutPaye = credit.echeancier.every((e: any) => e.statut === 'PAYÉ');
+        if (toutPaye) {
+          credit.statut = 'Remboursé';
+          alert(`Le crédit ${credit.reference} est désormais intégralement remboursé !`);
+        }
+      }
+    }
+  }
+
+  voirEcheancier(credit: any) {
+  this.creditSelectionne = credit;
+  console.log("Voici l'échéancier du crédit :", credit.echeancier);
+  this.selectedCreditForEcheance = credit;
 }
+
+
+
+
+  closeEcheanceView() {
+    this.selectedCreditForEcheance = null;
+  }
+
+}
+

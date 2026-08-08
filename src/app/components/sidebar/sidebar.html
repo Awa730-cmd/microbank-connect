@@ -6,21 +6,53 @@
 
   <!-- Menu -->
   <nav class="flex-1 px-4 py-6 space-y-2">
-    <a routerLink="/" routerLinkActive="bg-blue-800 font-semibold" [routerLinkActiveOptions]="{ exact: true }" class="block px-4 py-2 rounded-lg hover:bg-blue-800 transition">Tableau de bord</a>
-    <a routerLink="/clients" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2 rounded-lg hover:bg-blue-800 transition">Clients</a>
-    <a routerLink="/accounts" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2 rounded-lg hover:bg-blue-800 transition">Comptes</a>
-    <a routerLink="/operations" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2 rounded-lg hover:bg-blue-800 transition">Opérations</a>
-    <a routerLink="/credits" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2 rounded-lg hover:bg-blue-800 transition">Crédits</a>
-    <a routerLink="/statistiques" routerLinkActive="bg-white/20 text-white" class="block px-4 py-2 mt-2 text-sm font-semibold text-white/80 rounded-lg hover:bg-white/10 transition-colors">
-  Statistiques globales
-</a>
-<a routerLink="/agents" routerLinkActive="bg-white/20 text-white" class="block px-4 py-2 mt-2 text-sm font-semibold text-white/80 rounded-lg hover:bg-white/10 transition-colors">
-  Gestion des agents
-</a>
-  </nav>
 
-  <!-- Paramètres -->
-  <div class="p-4 border-t border-blue-800">
-    <button class="w-full text-left px-4 py-2 hover:bg-blue-800 rounded-lg transition text-sm">Paramètres</button>
-  </div>
+    <!-- 1. RÔLE CLIENT (Accès en lecture seule) -->
+    @if (authService.roleActuel() === 'CLIENT') {
+      <a routerLink="/client-space" routerLinkActive="bg-blue-800 font-semibold" class="flex items-center gap-3 px-4 py-2.5 rounded-lg">
+        <span>👤</span>
+        <span>Espace Client (Comptes & Crédits)</span>
+      </a>
+    }
+
+    <!-- 2. RÔLE AGENT (Gestion clients, opérations & crédits) -->
+    @if (authService.roleActuel() === 'AGENT') {
+      <a routerLink="/clients" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2.5 rounded-lg">
+        Gestion des Clients
+      </a>
+      <a routerLink="/accounts" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2.5 rounded-lg">
+        Gestion des Comptes
+      </a>
+      <a routerLink="/operations" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2.5 rounded-lg">
+        Opérations Bancaires
+      </a>
+      <a routerLink="/credits" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2.5 rounded-lg">
+        Instruction des Crédits
+      </a>
+      <a routerLink="/historique-agent" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2.5 rounded-lg">
+        Historique & Relevés
+      </a>
+    }
+
+    <!-- 3. RÔLE GESTIONNAIRE / ADMIN (Supervision, rapports & agents) -->
+    @if (authService.roleActuel() === 'GESTIONNAIRE') {
+      <a routerLink="/" routerLinkActive="bg-blue-800 font-semibold" [routerLinkActiveOptions]="{ exact: true }" class="block px-4 py-2.5 rounded-lg">
+        Supervision de l'Activité
+      </a>
+      <a routerLink="/statistiques" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2.5 rounded-lg">
+        Rapports & Statistiques
+      </a>
+      <a routerLink="/agents" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2.5 rounded-lg">
+        Gestion des Agents
+      </a>
+    }
+
+    <!-- ACCÈS CONFIGURATION & RÔLES (Accessible à tous) -->
+    <div class="pt-4 border-t border-blue-800 mt-4">
+      <a routerLink="/parametres" routerLinkActive="bg-blue-800 font-semibold" class="flex items-center px-4 py-2.5 rounded-lg">
+        <span>⚙️ Paramètres & Changement Rôle</span>
+      </a>
+    </div>
+
+  </nav>
 </aside>

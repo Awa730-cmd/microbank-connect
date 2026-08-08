@@ -1,42 +1,145 @@
-<div class="p-4 sm:p-6 max-w-7xl mx-auto">
-  <h2 class="text-2xl font-bold text-gray-800 mb-6">Vue d'ensemble de la banque</h2>
+<div class="p-6 max-w-7xl mx-auto space-y-6">
 
-  <!-- Les 3 cartes du haut -->
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h3 class="text-gray-500 text-sm font-medium">Total Clients</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2">{{ totalClients }}</p>
-      <p class="text-xs text-gray-400 mt-1">clients enregistrés</p>
+  <!-- Boutons d'exportation en haut à droite -->
+  <div class="flex justify-end gap-3">
+    <button (click)="exportToExcel()" class="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-emerald-700 shadow-sm transition">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+      Exporter Excel
+    </button>
+    <button (click)="exportToPDF()" class="flex items-center gap-2 bg-rose-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-rose-700 shadow-sm transition">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+      Exporter PDF
+    </button>
+  </div>
+
+  <!-- Contenu enveloppé pour l'export PDF -->
+  <div id="dashboard-content" class="space-y-6">
+
+  <!-- En-tête et Filtres temporels -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-slate-800">Vue d'ensemble de la banque</h2>
+      <p class="text-sm text-slate-500">Rapports et statistiques calculés en temps réel</p>
     </div>
 
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h3 class="text-gray-500 text-sm font-medium">Total Agents</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2">{{ totalAgents }}</p>
-      <p class="text-xs text-gray-400 mt-1">agents de la banque</p>
-    </div>
+    <div class="inline-flex p-1 bg-slate-200 rounded-xl space-x-1">
+      <button 
+        (click)="changerPeriode('JOUR')" 
+        [class.bg-white]="periodeActive() === 'JOUR'"
+        [class.shadow-sm]="periodeActive() === 'JOUR'"
+        [class.text-blue-700]="periodeActive() === 'JOUR'"
+        class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition">
+        Aujourd'hui
+      </button>
 
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h3 class="text-gray-500 text-sm font-medium">Volume des transactions</h3>
-      <p class="text-3xl font-bold text-green-600 mt-2">{{ volumeTransactions | number }}</p>
-      <p class="text-xs text-gray-400 mt-1">flux global</p>
+      <button 
+        (click)="changerPeriode('MOIS')" 
+        [class.bg-white]="periodeActive() === 'MOIS'"
+        [class.shadow-sm]="periodeActive() === 'MOIS'"
+        [class.text-blue-700]="periodeActive() === 'MOIS'"
+        class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition">
+        Ce mois
+      </button>
+
+      <button 
+        (click)="changerPeriode('TRIMESTRE')" 
+        [class.bg-white]="periodeActive() === 'TRIMESTRE'"
+        [class.shadow-sm]="periodeActive() === 'TRIMESTRE'"
+        [class.text-blue-700]="periodeActive() === 'TRIMESTRE'"
+        class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition">
+        Ce trimestre
+      </button>
+
+      <button 
+        (click)="changerPeriode('ANNEE')" 
+        [class.bg-white]="periodeActive() === 'ANNEE'"
+        [class.shadow-sm]="periodeActive() === 'ANNEE'"
+        [class.text-blue-700]="periodeActive() === 'ANNEE'"
+        class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition">
+        Année en cours
+      </button>
     </div>
   </div>
 
-  <!-- Carte en bas : Évolution des ouvertures de comptes -->
-  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full">
-    <h3 class="text-gray-700 font-semibold mb-1">Évolution des ouvertures de comptes</h3>
-    <p class="text-xs text-gray-400 mb-4">Derniers comptes enregistrés</p>
+  <!-- Cartes KPI Dynamiques -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+      <div class="text-sm font-medium text-slate-500 mb-2">Total Clients</div>
+      <div class="text-3xl font-bold text-slate-800">{{ statsData().totalClients }}</div>
+      <div class="text-xs text-slate-400 mt-1">Enregistrés sur la période</div>
+    </div>
 
-    <div class="space-y-2">
-      <div *ngFor="let client of derniersClients" class="flex justify-between items-center text-sm bg-gray-50 p-3 rounded-lg">
-        <span class="font-medium text-gray-800">{{ client.nom || client.prenom || 'Client' }}</span>
-        <span class="text-xs text-green-600 font-semibold bg-green-50 px-2 py-1 rounded-full">Actif</span>
-      </div>
-      
-      <div *ngIf="derniersClients.length === 0" class="text-xs text-gray-400 italic text-center py-4">
-        Aucun compte pour le moment
-      </div>
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+      <div class="text-sm font-medium text-slate-500 mb-2">Total Agents</div>
+      <div class="text-3xl font-bold text-slate-800">{{ statsData().totalAgents }}</div>
+      <div class="text-xs text-slate-400 mt-1">Agents actuellement actifs</div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+      <div class="text-sm font-medium text-slate-500 mb-2">Volume des transactions</div>
+      <div class="text-3xl font-bold text-emerald-600">{{ statsData().volumeFormatted }}</div>
+      <div class="text-xs text-slate-400 mt-1">Flux global calculé</div>
     </div>
   </div>
+
+  <!-- Zone du Graphique Barres -->
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <div class="mb-4">
+      <h3 class="text-lg font-bold text-slate-800">Évolution des ouvertures de comptes</h3>
+      <p class="text-xs text-slate-500">Répartition automatique selon le filtre sélectionné</p>
+    </div>
+
+    <div class="h-72 w-full relative">
+      <canvas #chartCanvas></canvas>
+    </div>
+  </div>
+
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-bold text-slate-800">Rapport des crédits en souffrance</h3>
+          <p class="text-xs text-slate-500">Suivi des prêts en retard de paiement ou impayés</p>
+        </div>
+        <span class="px-3 py-1 bg-rose-50 text-rose-700 text-xs font-semibold rounded-full border border-rose-200">
+          {{ creditsEnSouffrance().length }} Dossier(s)
+        </span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50">
+              <th class="p-3">Client</th>
+              <th class="p-3">Montant Restant</th>
+              <th class="p-3">Jours de Retard</th>
+              <th class="p-3">Agent Référent</th>
+              <th class="p-3">Statut</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-sm text-slate-700">
+            <tr *ngFor="let credit of creditsEnSouffrance()" class="hover:bg-slate-50/50 transition">
+              <td class="p-3 font-medium text-slate-800">{{ credit.clientNom }}</td>
+              <td class="p-3 font-semibold text-rose-600">{{ credit.montantRestantFormatted }}</td>
+              <td class="p-3">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                  {{ credit.joursRetard }} jours
+                </span>
+              </td>
+              <td class="p-3 text-slate-600">{{ credit.agentNom }}</td>
+              <td class="p-3">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-800">
+                  En souffrance
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="creditsEnSouffrance().length === 0">
+              <td colspan="5" class="p-6 text-center text-slate-400 text-sm">
+                Aucun crédit en souffrance enregistré pour cette période.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
 </div>

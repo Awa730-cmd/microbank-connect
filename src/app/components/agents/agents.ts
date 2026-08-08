@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './agents.html',
   styleUrls: ['./agents.css']
 })
+
 export class AgentsComponent implements OnInit {
 
   listeAgents: any[] = [];

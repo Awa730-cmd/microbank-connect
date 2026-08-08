@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Bank } from '../../services/bank';
+import { BankService } from '../../services/bank';
 
 @Component({
   selector: 'app-clients',
@@ -11,7 +11,7 @@ import { Bank } from '../../services/bank';
   styleUrl: './clients.css'
 })
 export class ClientsComponent implements OnInit {
-  private bankService = inject(Bank);
+  private bankService = inject(BankService);
 
   listeClients: any[] = [];
   searchTerm: string = '';
@@ -21,71 +21,78 @@ export class ClientsComponent implements OnInit {
   nouveauEmail: string = '';
   nouveauTelephone: string = '';
   nouveauSolde: number = 0;
-  nouveauTypeCompte: string = 'Courant'; // Valeur par défaut
+  nouveauTypeCompte: string = 'Courant';
 
   clientEnEdition: any = null;
+  comptes: any;
 
-  ngOnInit() {
-    // Va chercher la liste des clients à jour
+  ngOnInit(): void {
+    // Charge les clients dès l'ouverture de la page
+    this.chargerClients();
+  }
+
+  chargerClients() {
+    this.comptes = this.bankService.getClients();
+
     const clientsSauvegardes = localStorage.getItem('clients');
     if (clientsSauvegardes) {
       this.listeClients = JSON.parse(clientsSauvegardes);
     }
   }
-
-
-  // Fonction pour charger les données du client dans le formulaire
   modifierClient(client: any) {
     this.clientEnEdition = client;
     this.nouveauNom = client.nom;
     this.nouveauEmail = client.email;
     this.nouveauTelephone = client.telephone;
+    this.nouveauSolde = client.solde || 0;
     if (client.typeCompte) {
       this.nouveauTypeCompte = client.typeCompte;
     }
   }
 
-  // Fonction pour supprimer un client
   supprimerClient(client: any) {
     if (confirm('Voulez-vous vraiment supprimer ce client ?')) {
-      this.listeClients = this.listeClients.filter(c => c !== client);
+      this.listeClients = this.listeClients.filter((c: any) => c !== client);
       localStorage.setItem('clients', JSON.stringify(this.listeClients));
     }
   }
 
-  // Fonction d'enregistrement du client (Ajout ou Modification)
-  nouveauClient() {
+  enregistrerClient() {
     if (!this.nouveauNom || !this.nouveauEmail || !this.nouveauTelephone) {
-      alert("Veuillez remplir tous les champs obligatoires !");
+      alert('Veuillez remplir tous les champs obligatoires !');
       return;
     }
 
     if (this.clientEnEdition) {
-      // --- MODE Modification ---
-      this.bankService.modifierClient(
-        this.clientEnEdition.id,
-        this.nouveauNom,
-        this.nouveauEmail,
-        this.nouveauTelephone
-      );
-      // On réinitialise l'état d'édition
+      // --- MODE MODIFICATION ---
+      const clientModifie = {
+        id: this.clientEnEdition.id,
+        nom: this.nouveauNom,
+        email: this.nouveauEmail,
+        telephone: this.nouveauTelephone
+      };
+      this.bankService.modifierClient(clientModifie);
       this.clientEnEdition = null;
     } else {
-      // --- MODE Ajout ---
+      // --- MODE AJOUT ---
       const prefix = this.nouveauTypeCompte === 'Courant' ? 'CC' : 'CE';
       const randomId = Math.floor(Math.random() * 1000);
       const nouveauNumeroCompte = `ACC-2026-${prefix}-${randomId}`;
 
-      this.bankService.ajouterClient(
-        this.nouveauNom,
-        this.nouveauEmail,
-        this.nouveauTelephone,
-        this.nouveauSolde || 0,
-        nouveauNumeroCompte 
-      );
+      const nouveauClientObj = {
+        nom: this.nouveauNom,
+        email: this.nouveauEmail,
+        telephone: Number(this.nouveauTelephone),
+        solde: Number(this.nouveauSolde) || 0,
+        numeroCompte: nouveauNumeroCompte,
+        typeCompte: this.nouveauTypeCompte
+      };
+
+      this.bankService.ajouterClient(nouveauClientObj);
     }
 
-    localStorage.setItem('clients', JSON.stringify(this.listeClients));
+    // On recharge la liste mise à jour
+    this.chargerClients();
 
     // Réinitialisation des champs du formulaire
     this.nouveauNom = '';

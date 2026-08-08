@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../services/notification.service';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-navbar',
@@ -12,11 +13,12 @@ export class Navbar implements OnInit {
   isDropdownOpen = false;
   notifications: string[] = [];
 
-  // On injecte le service ici
+  // Injection du service AuthService
+  public authService = inject(AuthService);
+
   constructor(private notificationService: NotificationService) {}
 
   ngOnInit() {
-    // On s'abonne aux notifications pour mettre à jour l'affichage automatiquement
     this.notificationService.notifications$.subscribe(list => {
       this.notifications = list;
     });

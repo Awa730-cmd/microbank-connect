@@ -38,18 +38,22 @@
       </div>
     </div>
 
-    <!-- 2. LE PROFIL (AVATAR + TEXTE) -->
-    <div class="flex items-center space-x-3">
-      <!-- Avatar bleu -->
-      <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-        A
+   <div class="flex items-center space-x-3">
+ <!-- Première lettre du rôle pour l'avatar -->
+      <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+        {{ authService.currentUser().charAt(0) }}
       </div>
-      <!-- Infos texte -->
-      <div class="flex flex-col">
-        <span class="text-sm font-medium text-gray-700 leading-tight">Aminata</span>
-        <span class="text-xs text-gray-400">Profil : Agent</span>
-      </div>
-    </div>
 
+      <!-- Nom et Rôle dynamiques -->
+      <div class="text-right">
+        <div class="text-sm font-semibold text-slate-800">
+          {{ authService.currentUser() }}
+        </div>
+        <div class="text-xs text-slate-500">
+          Profil : {{ authService.roleActuel() }}
+        </div>
+      </div>
+
+    </div>
   </div>
 </header>
