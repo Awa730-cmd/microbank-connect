@@ -4,7 +4,8 @@
 *Module : Développement Frontend Angular v20 — MIAGE 1 (ISI KM)*  
 *Enseignant : M. GAYE Abdoulaye*  
 *Année académique : 2025 - 2026*
-Auteur: Nah Awa Faye — Étudiante en Master 1 MIAGE (ISI KM)
+Auteur: 
+Nah Awa Faye — Étudiante en Master 1 MIAGE (ISI KM)
 
 ---
 
