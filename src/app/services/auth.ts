@@ -12,11 +12,11 @@ export class AuthService {
   roleActuel = signal<string | null>(localStorage.getItem('userRole'));
   currentUser = signal<string>(localStorage.getItem('userRole') || 'GESTIONNAIRE');
 
-  // Notre "base de données" simulée d'utilisateurs
+  // "base de données" simulée d'utilisateurs
   private utilisateurs = [
     { email: 'client@microbank.com', mdp: 'client123', role: 'CLIENT', redirection: '/client-space' },
     { email: 'agent@microbank.com', mdp: 'agent123', role: 'AGENT', redirection: '/operations' },
-    { email: 'admin@microbank.com', mdp: 'admin123', role: 'GESTIONNAIRE', redirection: '/' }
+    { email: 'admin@microbank.com', mdp: 'admin123', role: 'GESTIONNAIRE', redirection: '/dashboard' }
   ];
 
   constructor(private router: Router) {}

@@ -14,11 +14,12 @@ import { ClientDashboardComponent } from './components/client-dashboard/client-d
 import { LoginComponent } from './components/login/login';
 import { adminGuard } from './admin.guard';
 export const routes: Routes = [
-  // 1. La route publique de connexion
+  // 1. La route publique de connexion (et route par défaut au lancement)
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
 
-  // 2. les  routes protégées 
-  { path: '', component: DashboardComponent, canActivate: [adminGuard] },
+  // 2. Les routes protégées
+  { path: 'dashboard', component: DashboardComponent, canActivate: [adminGuard] },
   { path: 'clients', component: ClientsComponent, canActivate: [adminGuard] },
   { path: 'accounts', component: AccountsComponent, canActivate: [adminGuard] },
   { path: 'operations', component: Operations, canActivate: [adminGuard] },
@@ -28,8 +29,7 @@ export const routes: Routes = [
   { path: 'historique-agent', component: HistoriqueAgentComponent, canActivate: [adminGuard] },
   { path: 'client-space', component: ClientDashboardComponent, canActivate: [adminGuard] },
   { path: 'parametres', component: Parametres, canActivate: [adminGuard] },
-  { path: 'login', component: LoginComponent },
 
-  // 3. Redirection automatique vers le login si l'URL est inconnue
+  // 3. Redirection si l'URL est inconnue
   { path: '**', redirectTo: 'login' }
 ];

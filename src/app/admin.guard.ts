@@ -1,6 +1,17 @@
-import { CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router, CanActivateFn } from '@angular/router';
 
 export const adminGuard: CanActivateFn = (route, state) => {
-  // Laisse passer la navigation sans blocage ni erreur d'import
-  return true;
+  const router = inject(Router);
+  
+  
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+  if (isLoggedIn) {
+    return true; // L'utilisateur est connecté, on le laisse passer
+  }
+
+  // Sinon, on bloque et on le redirige vers le login
+  router.navigate(['/login']);
+  return false;
 };
