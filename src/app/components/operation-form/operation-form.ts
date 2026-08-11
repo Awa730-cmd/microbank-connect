@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BankService } from '../../services/bank';
 
@@ -26,22 +26,30 @@ export class OperationFormComponent {
     });
   }
 
-  onSubmit() {
-    if (this.operationForm.valid) {
-      const formValues = this.operationForm.value;
-      const compteSelectionne = formValues.compteId || formValues.destinataireId;
-      const montant = Number(formValues.montant);
-      const typeOperation = formValues.typeOperation || 'depot';
+ onSubmit() {
+  if (this.operationForm.valid) {
+    const formValues = this.operationForm.value;
+    const typeOperation = (formValues.typeOperation || 'depot').toLowerCase().trim();
+    const montant = Number(formValues.montant);
 
-      // Appel direct et propre de la méthode centralisée dans le service BankService
-      this.bankService.effectuerOperation(compteSelectionne, typeOperation, montant);
+    // Si c'est un virement, on appelle la fonction dédiée avec l'émetteur et le destinataire
+    if (typeOperation === 'virement') {
+    const emetteurId = this.operationForm.get('compteId')?.value;
+    const destinataireId = this.operationForm.get('destinataireId')?.value;
 
-      // Réinitialisation du formulaire
-      this.operationForm.reset({ typeOperation: 'depot' });
-    } else {
-      this.operationForm.markAllAsTouched();
-    }
+    this.bankService.effectuerVirement(emetteurId, destinataireId, montant);
+  } else {
+    // Sinon, c'est un dépôt ou un retrait classique
+    const compteSelectionne = this.operationForm.get('compteId')?.value;
+    this.bankService.effectuerOperation(compteSelectionne, typeOperation, montant);
   }
+
+    // Réinitialisation du formulaire
+    this.operationForm.reset({ typeOperation: 'depot' });
+  } else {
+    this.operationForm.markAllAsTouched();
+  }
+}
 
   // Liste des comptes disponibles pour le client
   get comptes() {

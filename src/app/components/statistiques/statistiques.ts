@@ -20,14 +20,9 @@ export class StatistiquesComponent implements OnInit, AfterViewInit {
 
 // Signal pour les crédits en souffrance
 creditsEnSouffrance = computed(() => {
-  const creditsSauvegardes = localStorage.getItem('credits'); // Vérifie que c'est bien la clé 'credits'
-  const listeCredits = creditsSauvegardes ? JSON.parse(creditsSauvegardes) : [];
-  
-  // pour éviter l'erreur "void"
-  return listeCredits.map((c: any) => ({
-    ...c,
-    montantRestantFormatted: `${Number(c.montantRestant || c.montant || 0).toLocaleString('fr-FR')} FCFA`
-  }));
+const credits = this.allCredits(); 
+  return credits.filter(c => c.montantRestant > 0 && c.statut !== 'Remboursé');
+
 });
 
 

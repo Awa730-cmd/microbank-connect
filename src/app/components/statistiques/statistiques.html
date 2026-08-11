@@ -119,12 +119,12 @@
           <tbody class="divide-y divide-slate-100 text-sm text-slate-700">
             <tr *ngFor="let credit of creditsEnSouffrance()" class="hover:bg-slate-50/50 transition">
               <td class="p-3 font-medium text-slate-800">{{ credit.clientNom }}</td>
-              <td class="p-3 font-semibold text-rose-600">{{ credit.montantRestantFormatted }}</td>
+              <td class="p-3 font-semibold text-rose-600">{{ credit.montantRestant }}</td>
               <td class="p-3">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                  {{ credit.joursRetard }} jours
-                </span>
-              </td>
+  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+    {{ credit.joursRetard || 0 }} jours
+  </span>
+</td>
               <td class="p-3 text-slate-600">{{ credit.agentNom }}</td>
               <td class="p-3">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-800">

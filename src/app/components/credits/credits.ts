@@ -61,14 +61,25 @@ export class CreditsComponent implements OnInit {
       { mois: 3, dateDue: '11/05/2026', amountDue: (this.nouveauMontant - (montantMensuel * 2)), amountPaid: 0, statut: 'En_attente' }
     ];
 
+    // Récupérer le nom du client sélectionné
+const clientTrouve = this.comptes.find((c: any) => c.id === this.nouveauClient);
+const nomClient = clientTrouve ? (clientTrouve.nomComplet || clientTrouve.nom || 'Client') : 'Inconnu';
+
+// Récupérer le nom de l'agent connecté (selon la clé que tu utilises dans ton localStorage)
+const agentConnecte = JSON.parse(localStorage.getItem('currentUser') || '{}');
+const nomAgent = agentConnecte.nomComplet || agentConnecte.nom || 'Agent';
+
   const nouveauCredit = {
-    reference: `CRE-${Math.floor(1000 + Math.random() * 9000)}`,
-    client: this.nouveauClient,
-    montant: Number(this.nouveauMontant),
-    taux: Number(this.nouveauTaux || 5),
-    statut: 'En_attente',
-    echeancier: echeancierGenere
-  };
+  reference: `CRE-${Math.floor(1000 + Math.random() * 9000)}`,
+  client: this.nouveauClient,
+  clientNom: nomClient,         // <-- Ajouté ici pour l'affichage du nom
+  agentNom: nomAgent,           // <-- Ajouté ici pour l'agent référent
+  montant: Number(this.nouveauMontant),
+  montantRestant: Number(this.nouveauMontant), // <-- Indispensable pour le calcul des impayés/remboursements
+  taux: Number(this.nouveauTaux || 5),
+  statut: 'En_attente',
+  echeancier: echeancierGenere
+};
 
   if (this.bankService.ajouterCredit(nouveauCredit)) {
     this.nouveauClient = null;
@@ -116,14 +127,26 @@ export class CreditsComponent implements OnInit {
         return;
       }
 
-      // 4. Vérifier si TOUTES les échéances sont maintenant payées pour solder le crédit
-      if (credit.echeancier && credit.echeancier.length > 0) {
-        const toutPaye = credit.echeancier.every((e: any) => e.statut === 'PAYÉ');
-        if (toutPaye) {
-          credit.statut = 'Remboursé';
-          alert(`Le crédit ${credit.reference} est désormais intégralement remboursé !`);
-        }
-      }
+      // 4. Recalculer le montant restant du crédit en additionnant les échéances non payées
+const montantRestantCalcule = credit.echeancier
+  .filter((e: any) => e.statut !== 'PAYÉ')
+  .reduce((acc: number, curr: any) => acc + Number(curr.amountDue || 0), 0);
+
+credit.montantRestant = montantRestantCalcule;
+
+// 5. Vérifier si TOUTES les échéances sont maintenant payées pour solder le crédit
+if (credit.echeancier && credit.echeancier.length > 0) {
+  const toutPaye = credit.echeancier.every((e: any) => e.statut === 'PAYÉ');
+  if (toutPaye) {
+    credit.statut = 'Remboursé';
+    credit.montantRestant = 0;
+    alert(`Le crédit ${credit.reference} est désormais intégralement remboursé !`);
+  }
+}
+
+// 6. Sauvegarder et rafraîchir l'affichage
+this.bankService.sauvegarderDonnees();
+this.chargerCredits();
     }
   }
 

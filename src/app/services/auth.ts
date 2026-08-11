@@ -55,5 +55,13 @@ export class AuthService {
     this.currentUser.set(role);
     this.estConnecte.set(true);
     this.router.navigate([redirection]);
+
   }
+
+
+  deconnecter() {
+  localStorage.removeItem('isLoggedIn');
+  localStorage.removeItem('userRole'); // ou les autres clés que tu utilises
+  this.router.navigate(['/login']);
+}
 }

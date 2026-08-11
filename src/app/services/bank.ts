@@ -4,6 +4,7 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class BankService {
+
   
   // Listes principales
   public clients: any[] = [];
@@ -111,21 +112,27 @@ export class BankService {
     return false;
   }
 
-  rembourserCredit(reference: string): boolean {
-    const c = this.credits.find(item => item.reference === reference);
-    if (c) {
-      c.statut = 'Remboursé';
-      this.sauvegarderDonnees();
-      return true;
-    }
-    return false;
-  }
+ rembourserCredit(reference: string): boolean {
+  const c = this.credits.find(item => item.reference === reference);
+  if (c) {
+    c.statut = 'Remboursé';
+    c.montantRestant = 0; // <-- Remet le montant restant à 0
 
+    // Si le crédit possède un échéancier, on marque tout comme payé
+    if (c.echeancier && Array.isArray(c.echeancier)) {
+      c.echeancier.forEach((e: any) => e.statut = 'PAYÉ');
+    }
+
+    this.sauvegarderDonnees();
+    return true;
+  }
+  return false;
+}
   // Effectuer une opération (Dépôt / Retrait) avec Alerte
  effectuerOperation(clientId: any, type: string, montantRecu: any) {
     console.log("ID reçu du formulaire :", clientId);
     const montant = Number(montantRecu);
-    if (isNaN(montant) || montant <= 0) return;
+    if (isNaN(montant) || montant <= 0) return false;
 
     const typeNormalise = type.toLowerCase().trim();
 
@@ -155,7 +162,7 @@ export class BankService {
           alert(`Succès : Retrait de ${montant} FCFA effectué !`);
         } else {
           alert("Erreur : Solde insuffisant pour ce retrait !");
-          return;
+          return false;
         }
       }
 
@@ -171,13 +178,62 @@ export class BankService {
         compte: clientEmetteur.numeroCompte || 'ACC-001',
         type: typeNormalise.includes('depot') ? 'Dépôt' : 'Retrait',
         montant: montant,
-        date: dateDuJour
+        date: dateDuJour,
+        statut: 'Validé'
       };
 
       this.dernieresOperations.unshift(nouvelleOperation);
       this.sauvegarderDonnees();
+      return true;
     } else {
       alert("Erreur : Client introuvable.");
+      return false;
     }
+ }
+
+ effectuerVirement(compteEmetteurId: any, compteDestinataireId: any, montantRecu: any) {
+    const montant = Number(montantRecu);
+    if (isNaN(montant) || montant <= 0) {
+      alert("Montant invalide !");
+      return false;
+    }
+
+    let emetteur = this.clients.find(c => c.id === compteEmetteurId || c.numeroCompte === compteEmetteurId || c.nom === compteEmetteurId);
+    let destinataire = this.clients.find(c => c.id === compteDestinataireId || c.numeroCompte === compteDestinataireId || c.nom === compteDestinataireId);
+
+    if (!emetteur || !destinataire) {
+      alert("Erreur : Compte émetteur ou destinataire introuvable.");
+      return false;
+    }
+
+    const soldeEmetteur = Number(emetteur.solde || 0);
+    if (soldeEmetteur < montant) {
+      alert("Erreur : Solde insuffisant pour effectuer ce virement !");
+      return false;
+    }
+
+    emetteur.solde = soldeEmetteur - montant;
+    destinataire.solde = Number(destinataire.solde || 0) + montant;
+
+    const dateDuJour = new Date().toLocaleDateString('fr-FR', {
+      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+    });
+
+    const nouvelleOperation = {
+      id: Date.now(),
+      clientId: emetteur.id,
+      client: `${emetteur.nom} ➔ ${destinataire.nom}`,
+      compte: emetteur.numeroCompte || 'ACC-001',
+      type: 'Virement',
+      montant: montant,
+      date: dateDuJour,
+      statut: 'Validé'
+    };
+
+    this.dernieresOperations.unshift(nouvelleOperation);
+    this.sauvegarderDonnees();
+
+    alert(`Succès : Virement de ${montant} FCFA effectué !`);
+    return true;
   }
 }

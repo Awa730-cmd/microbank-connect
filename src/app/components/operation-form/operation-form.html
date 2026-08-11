@@ -14,7 +14,7 @@
       <select formControlName="typeOperation" class="form-control">
         <option value="depot">Dépôt</option>
         <option value="retrait">Retrait</option>
-        <option value="transfert">Virement</option>
+        <option value="virement">Virement</option>
       </select>
     </div>
 
@@ -33,7 +33,7 @@
     </div>
 
     <!-- Choix du compte destinataire (s'affiche uniquement si c'est un Virement) -->
-<div class="form-group" *ngIf="operationForm.get('typeOperation')?.value === 'transfert'">
+<div class="form-group" *ngIf="operationForm.get('typeOperation')?.value === 'virement'">
   <label>Compte destinataire</label>
   <select formControlName="destinataireId" class="form-control">
   <option value="" disabled>Sélectionner un compte destinataire</option>

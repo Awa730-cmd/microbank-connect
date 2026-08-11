@@ -36,7 +36,7 @@
 
     <!-- 3. RÔLE GESTIONNAIRE / ADMIN (Supervision, rapports & agents) -->
     @if (authService.roleActuel() === 'GESTIONNAIRE') {
-      <a routerLink="/" routerLinkActive="bg-blue-800 font-semibold" [routerLinkActiveOptions]="{ exact: true }" class="block px-4 py-2.5 rounded-lg">
+      <a routerLink="/dashboard" routerLinkActive="bg-blue-800 font-semibold" [routerLinkActiveOptions]="{ exact: true }" class="block px-4 py-2.5 rounded-lg">
         Supervision de l'Activité
       </a>
       <a routerLink="/statistiques" routerLinkActive="bg-blue-800 font-semibold" class="block px-4 py-2.5 rounded-lg">

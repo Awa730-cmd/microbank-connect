@@ -10,6 +10,9 @@ import { AuthService } from '../../services/auth';
   styleUrl: './navbar.css',
 })
 export class Navbar implements OnInit {
+deconnecter() {
+    this.authService.deconnecter();
+  }
   isDropdownOpen = false;
   notifications: string[] = [];
 

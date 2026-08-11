@@ -44,6 +44,10 @@
         {{ authService.currentUser().charAt(0) }}
       </div>
 
+      <button (click)="deconnecter()" class="text-red-600 hover:text-red-800 font-medium">
+  Se déconnecter
+</button>
+
       <!-- Nom et Rôle dynamiques -->
       <div class="text-right">
         <div class="text-sm font-semibold text-slate-800">
